@@ -1,0 +1,27 @@
+</style>
+<div class="section-heading">{{message}}</div> <br>
+    <table class="section-class" style="border: 1px solid black; border-collapse: collapse; width:100%">
+        <thead class="thick">
+            <th style="border: 1px solid black; border-collapse: collapse;padding: 15px;">Day</th>
+            <th style="border: 1px solid black; border-collapse: collapse;padding: 15px;">From</th>
+            <th style="border: 1px solid black; border-collapse: collapse;padding: 15px;">To</th>
+            <th style="border: 1px solid black; border-collapse: collapse;padding: 15px;">Care Worker(s)</th>
+        </thead>
+        <tbody>
+            {% for date, bookings in su_roster.items %}
+                {% for booking in bookings %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                            <td style="border: 1px solid black; border-collapse: collapse;padding: 15px;" rowspan="{{bookings|length}}">{{date}} </td>
+                        {% endif %}
+                            <td style="border: 1px solid black; border-collapse: collapse;padding: 15px;">{{booking.start}} </td>
+                            <td style="border: 1px solid black; border-collapse: collapse;padding: 15px;">{{booking.end}} </td>
+                            <td style="border: 1px solid black; border-collapse: collapse;padding: 15px;">{{booking.cws}} </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br>
+<td>To view more, click <a href = "{{link}}">here</a></td>

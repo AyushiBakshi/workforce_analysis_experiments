@@ -1,0 +1,16 @@
+<br>Dear {{ title }} {{ fullname }},
+<p>{{message}}
+    {% if acklink %}
+    <br>Click <a href={{acklink}}> here </a>to view details
+    {% endif %}
+    {% if applink %}
+    <br>Click <a href={{applink}}> here</a> to open to your web app
+    {% endif %}
+    <br>
+    <br>
+    Kind Regards,
+    <br>VS Team
+    <br>
+    <br></p>
+    <p style="color:grey">DO NOT REPLY. This is an auto-generated message
+    <br>Click here to <a href="">unsubscribe</a></p>

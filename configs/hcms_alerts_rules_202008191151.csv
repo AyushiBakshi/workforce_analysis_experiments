@@ -1,0 +1,10 @@
+"rule_id","filter","field","value","threshold","condition","created_date","created_by","last_modified_date","last_modified_by","delete_ind","related_trigger_id","rule_name"
+5,"[{""delete_ind"":""N"", ""subtype"":0, ""seen_date"":null,""notification_label"":""booking_change_not_seen""}]",alerts.notification.event_date,now,-10,>,2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,Y,,""
+1,"[{""delete_ind"":""N"", ""subtype"":0}]",alerts.notification.timestamp,now,trigger,>,2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,,""
+2,"[{""delete_ind"":""N""}]",cw.careworker.visa_expiry_date,now,-90,>,2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,35,Visa Expiry Reminder
+3,"[{""delete_ind"":""N""}]",cw.careworker.passport_expiry_date,now,-90,>,2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,36,Passport Expiry Reminder
+6,"[{""delete_ind"":""N""}]",su.CarePlan.end_date,now,-21,>,2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,46,SU Careplan Expiry Reminder
+7,"[{""delete_ind"":""N""},{""delete_ind"":""N""}]","cw.EmploymentRecord.end_date,cw.EmploymentRecord.employment_status","now,725","-21,0",">,=",2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,47,CW Contract Expiry Reminder
+4,"[{""delete_ind"":""N""},{""delete_ind"":""N""}]","cw.training.training_start_date,cw.training.training_status_mc_id","now,733","-14,0",">,=",2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,193,Training Reminder
+8,"[{""delete_ind"":""N""},{""delete_ind"":""N""}]","cw.training.completed_on,cw.training.training_status_mc_id","now,733","30,0",">,=",2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,34,Training Completion Reminder
+9,"[{""delete_ind"":""N""}]",cw.Certificate.valid_to,now,-30,>,2018-05-10 12:21:00,1,2018-05-10 12:21:00,1,N,214,CW Certificate Expiry Reminder
