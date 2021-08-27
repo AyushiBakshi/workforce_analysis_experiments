@@ -1,0 +1,20 @@
+### REST Django ###
+__pycache__
+*.pyc
+
+### Files uploaded by backend
+upload/
+1og.*/
+day*
+
+
+# IDE directories
+.idea
+.vscode
+
+#engine reports
+engine_logs/
+engine_reports/
+db_dumps/
+nohup.out
+
