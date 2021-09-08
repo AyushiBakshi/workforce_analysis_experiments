@@ -102,7 +102,6 @@ def get_skills_for_bookings( bookings):
                 bookings_dict[day][h]['all'][s] = bookings_dict[day][h]['all'].get(s, 0) + num_cw
                 if booking.service_user.profile.sex_mc_id == 8:
                     bookings_dict[day][h]['fem'][s] = bookings_dict[day][h]['fem'].get(s, 0) + num_cw
-    print(bookings_dict)
     return bookings_dict
 
 def test_sufficiency (cw_dict , bm_dict):
@@ -139,7 +138,7 @@ cwemploy = cwemploy.exclude( Q(user__cw_skill__valid_from__gte = enddate)| Q( us
 #get no of careworkers for each skill (both all and women)
 #cw_dict = {'all':{skill: no of all cw with that skill}, 'fem':{skill: no of female cw with that skill}}
 cw_dict = get_cw_per_skill( cwemploy)
-print(cw_dict)
+
 
 #get bookings info for valid bookings made by valid users between period
 subooking = SuWeeklyBooking.objects.exclude(valid_to__lt = startdate , valid_from__gt = enddate)
@@ -164,8 +163,4 @@ if(len(if_suff['fem'])):
     print('Insufficient cw for women ', if_suff['fem'])
 else:
     print('For women data is sufficient')
-
-
-print(cw_dict)
-
 
