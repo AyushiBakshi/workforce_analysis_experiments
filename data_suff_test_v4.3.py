@@ -1,6 +1,6 @@
 #Both set and dict (with query set)
 #with required format
-#
+
 #imports
 from cw.models import EmploymentRecord
 from su.models import SuWeeklyBooking
