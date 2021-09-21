@@ -1,6 +1,6 @@
 #Both set and dict (with query set)
 #with required format
-
+#
 #imports
 from cw.models import EmploymentRecord
 from su.models import SuWeeklyBooking
@@ -69,7 +69,7 @@ def is_insuff(cw_record, bm_record, startdate, enddate):
                                 {'slot_time_start': h, 'slot_time_end': h + 1,
                                  'insufficiency': [{'skill_id': skill, 'female_skill_insufficiency': 0,
                                                     'overall_skill_insufficiency': insuff_skill}]}]})
-                        in_sol = [x['slot_time_start'] == st_hr for x in sol[i]['slot_details'] if
+                        in_sol = [x['slot_time_start'] == h for x in sol[i]['slot_details'] if
                                   len(sol[i]['slot_details'])]
                         try:
                             j = in_sol.index(1)
@@ -78,7 +78,7 @@ def is_insuff(cw_record, bm_record, startdate, enddate):
                             sol[i]['slot_details'].append({'slot_time_start': h, 'slot_time_end': h + 1,
                                                            'insufficiency': [
                                                                {'skill_id': skill, 'female_skill_insufficiency': 0,
-                                                                'overall_skill_insufficinecy': 0}]})
+                                                                'overall_skill_insufficiency': 0}]})
                         in_sol = [x['skill_id'] == skill for x in sol[i]['slot_details'][j]['insufficiency'] if
                                   len(sol[i]['slot_details'][j]['insufficiency'])]
                         try:
