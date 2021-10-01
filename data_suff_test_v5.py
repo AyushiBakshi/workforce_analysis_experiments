@@ -13,7 +13,7 @@ from datetime import time, timedelta
 
 
 def get_period_of_consideration():
-    """ returns start date and end date to the period of consideration """
+    """ returns start date and end date to the period of consideration"""
     now = timezone.now()
     start = now.replace(day=13, month=11, year=2020)  # '2020-11-13 04:30:00'
     end = now.replace(day=13, month=12, year=2020)  # '2020-12-13 05:29:59'
