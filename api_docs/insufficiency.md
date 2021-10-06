@@ -5,7 +5,7 @@
        {
           'slot_time_start' : Time,
           'slot_time_end' : Time,
-          'insufficency' : [
+          'skill_insufficency' : [
                 {
                    'skill_id': Integer,
                    'female_skill_insufficiency': Integer #lacking by how much, 
@@ -15,11 +15,20 @@
                    'female_skill_insufficiency': Integer #lacking by how much, 
                    'overall_skill_insufficinecy': Integer #lacking by how much },
                 ]},
+          'gender_insufficency' : [
+                {
+                   
+                   'female_cw_insufficiency': Integer #lacking by how much, 
+                   'overall_cw_insufficinecy': Integer #lacking by how much },
+                {
+                   'female_cw_insufficiency': Integer #lacking by how much, 
+                   'overall_cw_insufficinecy': Integer #lacking by how much },
+                ]},
                 
          {
          'slot_time_start' : Time,
          'slot_time_end' : Time,
-         'insufficency' : [
+         'skill_insufficency' : [
                {
                   'skill_id': Integer,
                   'female_skill_insufficiency': Integer #lacking by how much, 
@@ -29,6 +38,15 @@
                 'female_skill_insufficiency': Integer #lacking by how much, 
                 'overall_skill_insufficinecy': Integer #lacking by how much },
                ]},
+           'gender_insufficency' : [
+                {
+                   
+                   'female_cw_insufficiency': Integer #lacking by how much, 
+                   'overall_cw_insufficinecy': Integer #lacking by how much },
+                {
+                   'female_cw_insufficiency': Integer #lacking by how much, 
+                   'overall_cw_insufficinecy': Integer #lacking by how much },
+                ]},
 
     }
 }]
