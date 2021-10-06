@@ -17,7 +17,6 @@
                 ]},
           'gender_insufficency' : [
                 {
-                   
                    'female_cw_insufficiency': Integer #lacking by how much, 
                    'overall_cw_insufficinecy': Integer #lacking by how much },
                 {
