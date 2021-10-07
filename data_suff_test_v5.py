@@ -96,7 +96,7 @@ def get_cw_skill_dicts(cw_record):
     return cw_skill_all, cw_skill_fem
 
 
-def update_solution(sol, bm_date, slot, skill, insuff, is_wom):
+def update_solution_skill(sol, bm_date, slot, skill, insuff, is_wom):
     """updates the insufficiency list when the insufficiency is detected
     returns the updated insufficiency list"""
     # get index of the dict for the date having insufficiency if present
@@ -108,8 +108,11 @@ def update_solution(sol, bm_date, slot, skill, insuff, is_wom):
         i = len(sol)
         sol.append({'date': bm_date, 'slot_details': [
             {'slot_time_start': slot[0], 'slot_time_end': slot[1],
-             'insufficiency': [{'skill_id': skill, 'female_skill_insufficiency': 0,
-                                'overall_skill_insufficiency': 0}]}]})
+             'gender_insufficiency' : [
+                                           {'female_cw_insufficiency': 0 ,
+                                            'overall_cw_insufficiency': 0}],
+             'skill_insufficiency': [{'skill_id': skill, 'female_skill_insufficiency': 0,
+                                        'overall_skill_insufficiency': 0}]}]})
     # get index of the dict for the slot time in the date having insufficiency if present
     # if not then append the slot with corresponding  skill, set insufficiency to 0
     # set index to that of the last element
@@ -119,7 +122,10 @@ def update_solution(sol, bm_date, slot, skill, insuff, is_wom):
     except:
         j = len(sol[i]['slot_details'])
         sol[i]['slot_details'].append({'slot_time_start': slot[0], 'slot_time_end': slot[1],
-                                       'insufficiency': [
+                                       'gender_insufficiency' : [
+                                           {'female_cw_insufficiency': 0 ,
+                                            'overall_cw_insufficiency': 0}],
+                                       'skill_insufficiency': [
                                            {'skill_id': skill, 'female_skill_insufficiency': 0,
                                             'overall_skill_insufficiency': 0}]})
     # get index of the dict for the skill id in the slot and date having insufficiency if present
@@ -127,19 +133,62 @@ def update_solution(sol, bm_date, slot, skill, insuff, is_wom):
     # set index to that of the last element
     try:
         k = [x['skill_id'] == skill for x in sol[i]['slot_details'][j]['insufficiency'] if
-             len(sol[i]['slot_details'][j]['insufficiency'])].index(1)
+             len(sol[i]['slot_details'][j]['skill_insufficiency'])].index(1)
     except:
-        k = len(sol[i]['slot_details'][j]['insufficiency'])
-        sol[i]['slot_details'][j]['insufficiency'].append(
+        k = len(sol[i]['slot_details'][j]['skill_insufficiency'])
+        sol[i]['slot_details'][j]['skill_insufficiency'].append(
             {'skill_id': skill, 'female_skill_insufficiency': 0,
              'overall_skill_insufficiency': 0})
     # set insufficiency as max calculated insufficiency and if woman su, add woman insufficiency
-    sol[i]['slot_details'][j]['insufficiency'][k]['overall_skill_insufficiency'] = max(
-        sol[i]['slot_details'][j]['insufficiency'][k]['overall_skill_insufficiency'],
+    sol[i]['slot_details'][j]['skill_insufficiency'][k]['overall_skill_insufficiency'] = max(
+        sol[i]['slot_details'][j]['skill_insufficiency'][k]['overall_skill_insufficiency'],
         insuff)
     if is_wom:
-        sol[i]['slot_details'][j]['insufficiency'][k]['female_skill_insufficiency'] = max(
-            sol[i]['slot_details'][j]['insufficiency'][k]['female_skill_insufficiency'],
+        sol[i]['slot_details'][j]['skill_insufficiency'][k]['female_skill_insufficiency'] = max(
+            sol[i]['slot_details'][j]['skill_insufficiency'][k]['female_skill_insufficiency'],
+            insuff)
+    return sol
+
+def update_solution_gender(sol, bm_date, slot, insuff, is_wom):
+    """updates the insufficiency list when the insufficiency is detected
+    returns the updated insufficiency list"""
+    # get index of the dict for the date having insufficiency if present
+    # if not then append the date with corresponding slot, skill, and set insufficiency to 0
+    # set index to that of the last element
+    try:
+        i = [x['date'] == bm_date for x in sol if len(sol)].index(True)
+    except:
+        i = len(sol)
+        sol.append({'date': bm_date, 'slot_details': [
+            {'slot_time_start': slot[0], 'slot_time_end': slot[1],
+             'gender_insufficiency': [
+                 {'female_cw_insufficiency': 0,
+                  'overall_cw_insufficiency': 0}],
+             'skill_insufficiency': []}]})
+    # get index of the dict for the slot time in the date having insufficiency if present
+    # if not then append the slot with corresponding  skill, set insufficiency to 0
+    # set index to that of the last element
+    try:
+        j = [x['slot_time_start'] == slot[0] for x in sol[i]['slot_details'] if
+             len(sol[i]['slot_details'])].index(1)
+    except:
+        j = len(sol[i]['slot_details'])
+        sol[i]['slot_details'].append({'slot_time_start': slot[0], 'slot_time_end': slot[1],
+                                       'gender_insufficiency': [
+                                           {'female_cw_insufficiency': 0,
+                                            'overall_cw_insufficiency': 0}],
+                                       'skill_insufficiency': [
+                                          ]})
+    # get index of the dict for the skill id in the slot and date having insufficiency if present
+    # if not then append the skill with corresponding  and set insufficiency to 0
+    # set index to that of the last element
+    # set insufficiency as max calculated insufficiency and if woman su, add woman insufficiency
+    sol[i]['slot_details'][j]['gender_insufficiency'][0]['overall_cw_insufficiency'] = max(
+        sol[i]['slot_details'][j]['gender_insufficiency'][0]['overall_cw_insufficiency'],
+        insuff)
+    if is_wom:
+        sol[i]['slot_details'][j]['gender_insufficiency'][k]['female_cw_insufficiency'] = max(
+            sol[i]['slot_details'][j]['gender_insufficiency'][k]['female_cw_insufficiency'],
             insuff)
     return sol
 
@@ -174,10 +223,12 @@ def is_insuff(cw_cert_record, cw_employ_record, careplan, bm_record, startdate, 
             # if the su is a woman, consider the other bookings having females, and only fem cw skills
             if is_wom:
                 bm = bm_master.filter(service_user__profile__sex_mc_id=8)
+                cw = cw_master.filter(user__profile__sex_mc_id=8)
                 cw_skill = cw_skill_fem
             # else consider all bookings and cw
             else:
                 bm = bm_master
+                cw = cw_master
                 cw_skill = cw_skill_all
             # check if booking is overnight
             # hours = list of slots in which booking lies
@@ -200,6 +251,14 @@ def is_insuff(cw_cert_record, cw_employ_record, careplan, bm_record, startdate, 
                     bm_date_in_dict = date.date() + timedelta(days=1)
                 else:
                     bm_date_in_dict = date.date()
+                # total cw required in slot
+                num_cw_req_in_slot = sum([x.no_of_cw for x in bm_slot])
+                # total cw present in slot
+                total_cw_slot = len(cw.distinct('user_id'))
+                # if there is insufficiency in gender
+                if num_cw_req_in_slot > total_cw_slot:
+                    insuff_gender = num_cw_req_in_slot - total_cw_slot
+                    sol = update_solution_gender(sol, bm_date_in_dict, slot, insuff_gender, is_wom)
                 # for each skill in the required skills for booking
                 for skill in req_skill:
                     # get num of cw with the skill
@@ -209,7 +268,7 @@ def is_insuff(cw_cert_record, cw_employ_record, careplan, bm_record, startdate, 
                     # if there is insufficiency, update the solution list
                     if num_req_cw_w_skill > num_cw_w_skill:
                         insuff_skill = num_req_cw_w_skill - num_cw_w_skill
-                        sol = update_solution(sol, bm_date_in_dict, slot, skill, insuff_skill, is_wom)
+                        sol = update_solution_skill(sol, bm_date_in_dict, slot, skill, insuff_skill, is_wom)
     # sort result by the date of insufficiency
     sol.sort(key=lambda x: x['date'])
     return sol
