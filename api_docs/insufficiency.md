@@ -19,18 +19,12 @@
                 {
                    'female_cw_insufficiency': Integer #lacking by how much, 
                    'overall_cw_insufficinecy': Integer #lacking by how much },
-                {
-                   'female_cw_insufficiency': Integer #lacking by how much, 
-                   'overall_cw_insufficinecy': Integer #lacking by how much },
-                }],
-          'hard_cpref_failure_insufficency' : [
+                ],
+          'hard_pref_failure_insufficency' : [
                 {
                    'female_pref_insufficiency': Integer #lacking by how much, 
                    'overall_pref_insufficinecy': Integer #lacking by how much },
-                {
-                   'female_pref_insufficiency': Integer #lacking by how much, 
-                   'overall_pref_insufficinecy': Integer #lacking by how much },
-                }]},
+                ]},
                 
          {
         
