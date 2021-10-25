@@ -161,9 +161,9 @@ def update_solution_skill(sol, bm_date, slot, skill, insuff, is_wom):
                                             'overall_cw_insufficiency': 0}],
              'skill_insufficiency': [{'skill_id': skill, 'female_skill_insufficiency': 0,
                                         'overall_skill_insufficiency': 0}],
-                            'hard_pref_failure_insufficency':[{
+                            'hard_pref_failure_insufficiency':[{
                    'female_pref_insufficiency': 0,
-                   'overall_pref_insufficinecy': 0}
+                   'overall_pref_insufficiency': 0}
                 ]}]})
     # get index of the dict for the slot time in the date having insufficiency if present
     # if not then append the slot with corresponding  skill, set insufficiency to 0
@@ -180,15 +180,15 @@ def update_solution_skill(sol, bm_date, slot, skill, insuff, is_wom):
                                        'skill_insufficiency': [
                                            {'skill_id': skill, 'female_skill_insufficiency': 0,
                                             'overall_skill_insufficiency': 0}],
-                                        'hard_pref_failure_insufficency':[{
+                                        'hard_pref_failure_insufficiency':[{
                                             'female_pref_insufficiency': 0,
-                                            'overall_pref_insufficinecy': 0}
+                                            'overall_pref_insufficiency': 0}
                                              ]})
     # get index of the dict for the skill id in the slot and date having insufficiency if present
     # if not then append the skill with corresponding  and set insufficiency to 0
     # set index to that of the last element
     try:
-        k = [x['skill_id'] == skill for x in sol[i]['slot_details'][j]['insufficiency'] if
+        k = [x['skill_id'] == skill for x in sol[i]['slot_details'][j]['skill_insufficiency'] if
              len(sol[i]['slot_details'][j]['skill_insufficiency'])].index(1)
     except:
         k = len(sol[i]['slot_details'][j]['skill_insufficiency'])
@@ -221,9 +221,9 @@ def update_solution_gender(sol, bm_date, slot, insuff, is_wom):
                  {'female_cw_insufficiency': 0,
                   'overall_cw_insufficiency': 0}],
              'skill_insufficiency': [],
-             'hard_pref_failure_insufficency':[{
+             'hard_pref_failure_insufficiency':[{
                    'female_pref_insufficiency': 0,
-                   'overall_pref_insufficinecy': 0}
+                   'overall_pref_insufficiency': 0}
                 ]}]})
     # get index of the dict for the slot time in the date having insufficiency if present
     # if not then append the slot with corresponding  skill, set insufficiency to 0
@@ -238,9 +238,9 @@ def update_solution_gender(sol, bm_date, slot, insuff, is_wom):
                                            {'female_cw_insufficiency': 0,
                                             'overall_cw_insufficiency': 0}],
                                        'skill_insufficiency': [],
-                                        'hard_pref_failure_insufficency':[{
+                                        'hard_pref_failure_insufficiency':[{
                                             'female_pref_insufficiency': 0,
-                                            'overall_pref_insufficinecy': 0}
+                                            'overall_pref_insufficiency': 0}
                                             ]})
     # get index of the dict for the skill id in the slot and date having insufficiency if present
     # if not then append the skill with corresponding  and set insufficiency to 0
