@@ -9,6 +9,8 @@ from su.models import SuWeeklyBooking
 from su.models import HcmsSuPreference
 from su.models import CWException
 from su.models import CarePlan
+from booking.models import ScheduledBooking
+from booking.models import BookingAllocationQuality
 from django.db.models import Q
 from pandas import date_range
 from django.utils import timezone
@@ -82,45 +84,52 @@ def get_slots():
 def advanced_sufficiency(cw_record, bm):
     """take into consideration has pets, is a smoker, sex, religion, ethnicity, primary language,
     hard preferences"""
-    # remove cw who do not fit into su's hard pref
-    su_pref = HcmsSuPreference.objects.filter(user__user_id = bm.service_user.user_id , incorporation_type_mc_id = 662 )
-    for su_record in su_pref:
-        if su_record.preference_type_mc_id == 661:
-            cw_record = cw_record.filter(user__profile__primary_language_mc_id = bm.service_user.profile.primary_language_mc_id)
-        elif su_record.preference_type_mc_id == 660:
-            cw_record = cw_record.filter(user__profile__ethnicity_mc_id=bm.service_user.profile.ethnicity_mc_id)
-        elif su_record.preference_type_mc_id == 659:
-            cw_record = cw_record.filter(user__profile__religion_mc_id=bm.service_user.profile.religion_mc_id)
-        elif su_record.preference_type_mc_id == 657:
-            cw_record = cw_record.filter(user__profile__sex_mc_id=bm.service_user.profile.sex_mc_id)
-        elif su_record.preference_type_mc_id == 658:
-            su_except = CWException.objects.filter(user__user_id = su_record.user.user_id ).values_list('exceptions')
-            z = []
-            if len(su_except)!=0:
-                y = [x for x in su_except][0][0].split(',')
-            else:
-                y = []
-            for w in y:
-                z.append(w)
-            cw_record = cw_record.exclude(user__user_name__in = z)
-    # remove cw who have hard pref conflicting with su
-    cw_w_hard_pref = HcmsCwPreference.objects.filter(user__user_id__in= cw_record.values_list('user__user_id', flat=True))
-    cw_w_hard_pref = cw_w_hard_pref.filter(incorporation_type_mc_id = 662)
-    for cw_indiv in cw_w_hard_pref:
-        if cw_indiv.preference_type_mc_id == 661 and cw_indiv.user.profile.primary_language_mc_id != bm.service_user.profile.primary_language_mc_id:
-            cw_record = cw_record.exclude(user__user_id = cw_indiv.user.user_id)
-        elif cw_indiv.preference_type_mc_id == 660 and cw_indiv.user.profile.ethnicity_mc_id != bm.service_user.profile.ethnicity_mc_id:
-            cw_record = cw_record.exclude(user__user_id = cw_indiv.user.user_id)
-        elif cw_indiv.preference_type_mc_id == 659 and cw_indiv.user.profile.religion_mc_id != bm.service_user.profile.religion_mc_id:
-            cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
-        elif cw_indiv.preference_type_mc_id == 657 and cw_indiv.user.profile.sex_mc_id != bm.service_user.profile.sex_mc_id:
-            cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
-        elif cw_indiv.preference_type_mc_id == 656 and bm.service_user.profile.is_non_smoker == 0:
-            cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
-        elif cw_indiv.preference_type_mc_id == 260 and bm.service_user.serviceuser.has_no_pets == 0:
-            cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
-        elif cw_indiv.preference_type_mc_id == 665 and bm.booking_type_mc_id in [int(x) for x in cw_indiv.preference_value.split(',')]:
-            cw_record = cw_record.exclude(user__user_id = cw_indiv.user.user_id)
+    alloc_qual = BookingAllocationQuality.objects.filter(booking__weekly_booking_id = bm.weekly_booking_id )
+    if len(alloc_qual):
+        alloc_qual = alloc_qual.exclude(Q(is_cw_hard_failed = True) | Q(is_su_hard_failed=True))
+        cw_alloc_qual = alloc_qual.values_list('careworker', flat=True).distinct()
+        cw_record = cw_record.filter(user__user_id__in = cw_alloc_qual)
+    #
+    else:
+        # remove cw who do not fit into su's hard pref
+        su_pref = HcmsSuPreference.objects.filter(user__user_id = bm.service_user.user_id , incorporation_type_mc_id = 662 )
+        for su_record in su_pref:
+            if su_record.preference_type_mc_id == 661:
+                cw_record = cw_record.filter(user__profile__primary_language_mc_id = bm.service_user.profile.primary_language_mc_id)
+            elif su_record.preference_type_mc_id == 660:
+                cw_record = cw_record.filter(user__profile__ethnicity_mc_id=bm.service_user.profile.ethnicity_mc_id)
+            elif su_record.preference_type_mc_id == 659:
+                cw_record = cw_record.filter(user__profile__religion_mc_id=bm.service_user.profile.religion_mc_id)
+            elif su_record.preference_type_mc_id == 657:
+                cw_record = cw_record.filter(user__profile__sex_mc_id=bm.service_user.profile.sex_mc_id)
+            elif su_record.preference_type_mc_id == 658:
+                su_except = CWException.objects.filter(user__user_id = su_record.user.user_id ).values_list('exceptions')
+                z = []
+                if len(su_except)!=0:
+                    y = [x for x in su_except][0][0].split(',')
+                else:
+                    y = []
+                for w in y:
+                    z.append(w)
+                cw_record = cw_record.exclude(user__user_name__in = z)
+        # remove cw who have hard pref conflicting with su
+        cw_w_hard_pref = HcmsCwPreference.objects.filter(user__user_id__in= cw_record.values_list('user__user_id', flat=True))
+        cw_w_hard_pref = cw_w_hard_pref.filter(incorporation_type_mc_id = 662)
+        for cw_indiv in cw_w_hard_pref:
+            if cw_indiv.preference_type_mc_id == 661 and cw_indiv.user.profile.primary_language_mc_id != bm.service_user.profile.primary_language_mc_id:
+                cw_record = cw_record.exclude(user__user_id = cw_indiv.user.user_id)
+            elif cw_indiv.preference_type_mc_id == 660 and cw_indiv.user.profile.ethnicity_mc_id != bm.service_user.profile.ethnicity_mc_id:
+                cw_record = cw_record.exclude(user__user_id = cw_indiv.user.user_id)
+            elif cw_indiv.preference_type_mc_id == 659 and cw_indiv.user.profile.religion_mc_id != bm.service_user.profile.religion_mc_id:
+                cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
+            elif cw_indiv.preference_type_mc_id == 657 and cw_indiv.user.profile.sex_mc_id != bm.service_user.profile.sex_mc_id:
+                cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
+            elif cw_indiv.preference_type_mc_id == 656 and bm.service_user.profile.is_non_smoker == 0:
+                cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
+            elif cw_indiv.preference_type_mc_id == 260 and bm.service_user.serviceuser.has_no_pets == 0:
+                cw_record = cw_record.exclude(user__user_id=cw_indiv.user.user_id)
+            elif cw_indiv.preference_type_mc_id == 665 and bm.booking_type_mc_id in [int(x) for x in cw_indiv.preference_value.split(',')]:
+                cw_record = cw_record.exclude(user__user_id = cw_indiv.user.user_id)
     return cw_record
 
 
